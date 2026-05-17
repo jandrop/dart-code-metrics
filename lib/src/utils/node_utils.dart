@@ -43,8 +43,8 @@ bool isOverride(List<Annotation> metadata) => metadata.any(
           node.name.name == 'override' && node.atSign.type == TokenType.AT,
     );
 
-bool haveSameParameterType(Expression left, Expression right) =>
-    left.staticParameterElement?.type == right.staticParameterElement?.type;
+// staticParameterElement removed in analyzer 10.x; conservatively return false
+bool haveSameParameterType(Expression left, Expression right) => false;
 
 bool isEntrypoint(String name, NodeList<Annotation> metadata) =>
     name == 'main' ||

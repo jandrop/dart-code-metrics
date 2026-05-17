@@ -23,7 +23,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
       if (arg is Literal) {
         _expressions.add(expression);
       } else if (arg is Identifier) {
-        final element = arg.staticElement;
+        final element = arg.element;
         if (element is PropertyAccessorElement && element.variable.isConst) {
           _expressions.add(expression);
         }

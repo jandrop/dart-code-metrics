@@ -4,6 +4,7 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:collection/collection.dart';
@@ -209,7 +210,7 @@ class UnnecessaryNullableAnalyzer {
     Iterable<FormalParameter> parameters,
   ) {
     final usages = invocationsUsage.elements[element];
-    final unit = element.thisOrAncestorOfType<CompilationUnitElement>();
+    final unit = element.library?.firstFragment;
     if (usages == null || unit == null) {
       return null;
     }
@@ -244,7 +245,7 @@ class UnnecessaryNullableAnalyzer {
       (parameter) =>
           !_shouldIgnoreWidgetKey(parameter) &&
           !markedParameters.contains(parameter) &&
-          isNullableType(parameter.declaredElement?.type),
+          isNullableType(parameter.declaredFragment?.element.type),
     );
 
     if (unnecessaryNullable.isEmpty) {
@@ -287,21 +288,23 @@ class UnnecessaryNullableAnalyzer {
     final isNullable = argument is NullLiteral ||
         (staticType != null &&
             // ignore: deprecated_member_use
-            (staticType.isDynamic || isNullableType(staticType)));
+            (staticType is DynamicType || isNullableType(staticType)));
 
     return isNullable;
   }
 
   UnnecessaryNullableIssue _createUnnecessaryNullableIssue(
     ElementImpl element,
-    CompilationUnitElement unit,
+    LibraryFragment unit,
     Iterable<FormalParameter> parameters,
   ) {
-    final offset = element.codeOffset!;
+    final offset = element.firstFragment.codeOffset ??
+        element.firstFragment.nameOffset ??
+        0;
     final lineInfo = unit.lineInfo;
     final offsetLocation = lineInfo.getLocation(offset);
 
-    final sourceUrl = element.source!.uri;
+    final sourceUrl = unit.source.uri;
 
     return UnnecessaryNullableIssue(
       declarationName: element.displayName,
@@ -321,7 +324,8 @@ class UnnecessaryNullableAnalyzer {
 
     if (closestDeclaration is ConstructorDeclaration) {
       return parameter.name?.lexeme == 'key' &&
-          isWidgetOrSubclass(closestDeclaration.declaredElement?.returnType);
+          isWidgetOrSubclass(
+              closestDeclaration.declaredFragment?.element.returnType);
     }
 
     return false;

@@ -79,10 +79,9 @@ class _AsyncSetStateVisitor extends RecursiveAstVisitor<void> {
     }
 
     // ignore: deprecated_member_use
-    node.condition.accept(this);
+    node.expression.accept(this);
 
-    // ignore: deprecated_member_use
-    final newMounted = _extractMountedCheck(node.condition);
+    final newMounted = _extractMountedCheck(node.expression);
     mounted = newMounted.or(mounted);
 
     final beforeThen = mounted;
@@ -105,8 +104,7 @@ class _AsyncSetStateVisitor extends RecursiveAstVisitor<void> {
     } else if (elseDiverges) {
       mounted = beforeThen != afterThen
           ? afterThen
-          // ignore: deprecated_member_use
-          : _extractMountedCheck(node.condition, permitAnd: false);
+          : _extractMountedCheck(node.expression, permitAnd: false);
     }
   }
 

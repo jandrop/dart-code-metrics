@@ -53,9 +53,8 @@ class AnalyzerPlugin extends ServerPlugin {
     final file = location.getChildAssumingFile('uuid');
     if (!file.exists) {
       uuid = const Uuid().v4();
-      file
-        ..createSource(file.toUri())
-        ..writeAsStringSync(uuid);
+      // ignore: cascade_invocations
+      file.writeAsStringSync(uuid);
     } else {
       uuid = file.readAsStringSync();
     }
