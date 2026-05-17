@@ -9,13 +9,12 @@ class _Visitor extends RecursiveAstVisitor<void> {
   void visitVariableDeclaration(VariableDeclaration node) {
     super.visitVariableDeclaration(node);
 
-    // ignore: deprecated_member_use
-    if (node.declaredElement?.enclosingElement3 is CompilationUnitElement) {
+    final element = node.declaredFragment?.element;
+    if (element is TopLevelVariableElement) {
       if (_isNodeValid(node)) {
         _declarations.add(node);
       }
-    } else if ((node.declaredElement?.isStatic ?? false) &&
-        _isNodeValid(node)) {
+    } else if ((element?.isStatic ?? false) && _isNodeValid(node)) {
       _declarations.add(node);
     }
   }
@@ -23,5 +22,5 @@ class _Visitor extends RecursiveAstVisitor<void> {
   bool _isNodeValid(VariableDeclaration node) =>
       !node.isFinal &&
       !node.isConst &&
-      !(node.declaredElement?.isPrivate ?? false);
+      !(node.declaredFragment?.element.isPrivate ?? false);
 }

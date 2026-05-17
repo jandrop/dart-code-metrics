@@ -70,7 +70,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
           removedListeners,
           disposedListeners,
           target.name,
-          target.staticElement,
+          target.element,
         );
       }
     }
@@ -84,7 +84,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
   ) {
     for (final addedListener in addedListeners) {
       final target = addedListener.realTarget;
-      final widgetType = widgetParameter.declaredElement?.type;
+      final widgetType = widgetParameter.declaredFragment?.element.type;
 
       if (target is PrefixedIdentifier &&
           _isRootWidget(target.prefix.staticType, widgetType)) {
@@ -101,7 +101,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
           removedListeners,
           disposedListeners,
           targetName,
-          target.staticElement,
+          target.element,
         );
       } else if (target is Identifier) {
         _compareInvocation(
@@ -109,7 +109,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
           removedListeners,
           disposedListeners,
           target.name,
-          target.staticElement,
+          target.element,
         );
       }
     }
@@ -155,9 +155,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
 
     return removedTarget is Identifier &&
         removedTarget.name == targetName &&
-        (removedTarget.staticElement == staticElement ||
-            removedTarget.staticElement?.declaration ==
-                staticElement?.declaration);
+        removedTarget.element == staticElement;
   }
 
   bool _haveSameCallbacks(
@@ -170,7 +168,7 @@ class _Visitor extends RecursiveAstVisitor<void> {
     return addedCallback is Identifier &&
         removedCallback is Identifier &&
         addedCallback.name == removedCallback.name &&
-        addedCallback.staticElement == removedCallback.staticElement;
+        addedCallback.element == removedCallback.element;
   }
 
   bool _isRootWidget(DartType? type, DartType? rootType) =>

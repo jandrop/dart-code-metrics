@@ -2,6 +2,7 @@
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 
 import '../../../../../utils/flutter_types_utils.dart';
